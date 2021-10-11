@@ -102,6 +102,7 @@ _oc_restart-af-services()
 
     flags+=("-h")
     flags+=("--minio")
+    flags+=("--artifactory")
     flags+=("--no-dry-run")
     flags+=("-A")
     flags+=("-h")
