@@ -115,8 +115,9 @@ _kubectl_restart-af-services()
 with open(sys.argv[1], 'r') as f:
     compl_script = f.read()
 
-    # remove first comment line
-    compl_script = compl_script.split('\n', 2)[2]
+    # remove comment lines at start of
+    # completion script
+    compl_script = compl_script.split('\n', 16)[16]
 
 if len(search_params) != len(func_body_replacements):
     raise Exception('Number of search parameters not equal number of replacement strings')
