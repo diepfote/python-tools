@@ -49,6 +49,7 @@ search_params = [
                     ('_oc_root_command', True, 'commands=\\(\\)'),  # put something into a function body at a specific location
                     ('__oc_get_namespaces'),  # replace entire function
                     ('', True),  # no search parameters, prepend to completion script
+                    ('', True),  # no search parameters, prepend to completion script
                     ('', True)  # no search parameters, prepend to completion script
                 ]
 
@@ -62,7 +63,8 @@ func_body_replacements.append(
     commands+=("get-all-namespaced-resources")
     commands+=("velero-annotate-all-volumes-for-pod")
     commands+=("watch-namespace")
-    commands+=("restart-af-services")"""
+    commands+=("restart-af-services")
+    commands+=("af-arbitrary-command")"""
 )
 func_body_replacements.append('    _watch-namespace_completions')
 func_body_replacements.append(
@@ -105,13 +107,30 @@ _oc_restart-af-services()
     flags+=("--artifactory")
     flags+=("--no-dry-run")
     flags+=("-A")
-    flags+=("-h")
-    # flags+=("-r")
 
     two_word_flags+=("-n")
     flags_with_completion+=("-n")
-    flags_completion+=("_restart-af-services_completions")
+    flags_completion+=("_watch-namespace_completions")
+}
+""")
+func_body_replacements.append(
+    """
+_oc_af-arbitrary-command()
+{
+    last_command="oc_af_arbitrary_command"
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
 
+    flags+=("-h")
+    flags+=("-A")
+    flags+=("-n")
+
+    two_word_flags+=("-n")
+    flags_with_completion+=("-n")
+    flags_completion+=("_watch-namespace_completions")
 }
 """)
 
