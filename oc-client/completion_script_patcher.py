@@ -59,6 +59,8 @@ search_params = [
 func_body_replacements = []
 func_body_replacements.append(
         """
+    commands+=("tree")
+    commands+=("fields")
     commands+=("delete-namespace-finalizer")
     commands+=("get-all-namespaced-resources")
     commands+=("velero-annotate-all-volumes-for-pod")
