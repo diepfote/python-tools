@@ -2,7 +2,7 @@
 
 ## How to
 
-```
+```none
 if [[ -x /usr/local/bin/kubectl ]]; then
   filename="/tmp/_kubectl-completions"
   _patched_kubectl_completions="$filename-patched"
@@ -19,7 +19,7 @@ fi
 
 ## Results
 
-```
+```diff
 diff --git a/tmp/_kubectl-completions b/tmp/_kubectl-completions-patched
 index 4cbd4a7..320df73 100644
 --- a/tmp/_kubectl-completions

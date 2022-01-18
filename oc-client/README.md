@@ -2,7 +2,7 @@
 
 ## How to
 
-```
+```none
 if [[ -x /usr/local/bin/oc ]]; then
   filename="/tmp/_oc-completions"
   _patched_oc_completions="$filename-patched"
@@ -19,7 +19,7 @@ fi
 
 ## Results
 
-```
+```diff
 diff --git a/tmp/_oc-completions b/tmp/_oc-completions-patched
 index 9c7d488..cff4595 100644
 --- a/tmp/_oc-completions
