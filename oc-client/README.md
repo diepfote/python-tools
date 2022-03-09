@@ -20,60 +20,18 @@ fi
 ## Results
 
 ```diff
-diff --git a/tmp/_oc-completions b/tmp/_oc-completions-patched
-index 9c7d488..cff4595 100644
---- a/tmp/_oc-completions
-+++ b/tmp/_oc-completions-patched
-@@ -1,5 +1,47 @@
+diff --git a/tmp/asdf b/tmp/asdf1
+index 9c7d4881..1735a26b 100644
+--- a/tmp/asdf
++++ b/tmp/asdf1
+@@ -1,6 +1,4 @@
  
 -# bash completion for oc                                   -*- shell-script -*-
-+_oc_restart-af-services()
-+{
-+    last_command="oc_restart_af_services"
-+    flags=()
-+    two_word_flags=()
-+    local_nonpersistent_flags=()
-+    flags_with_completion=()
-+    flags_completion=()
-+
-+    flags+=("-h")
-+    flags+=("--minio")
-+    flags+=("--no-dry-run")
-+    flags+=("-A")
-+    flags+=("-h")
-+    # flags+=("-r")
-+
-+    two_word_flags+=("-n")
-+    flags_with_completion+=("-n")
-+    flags_completion+=("_restart-af-services_completions")
-+
-+}
-+
-+_oc_watch-namespace()
-+{
-+    last_command="oc_watch_namespace"
-+    flags=()
-+    two_word_flags=()
-+    local_nonpersistent_flags=()
-+    flags_with_completion=()
-+    flags_completion=()
-+
-+    flags+=("-h")
-+    # flags+=("-r")
-+    two_word_flags+=("-r")
-+    flags_with_completion+=("-r")
-+    flags_completion+=("_watch-namespace_completions")
-+    # flags_completion+=("__oc_region_complete")
-+
-+    two_word_flags+=("-n")
-+    flags_with_completion+=("-n")
-+    flags_completion+=("_watch-namespace_completions")
-+
-+}
- 
+-
  __oc_debug()
  {
-@@ -297,13 +339,8 @@ __oc_parse_get()
+     if [[ -n ${BASH_COMP_DEBUG_FILE} ]]; then
+@@ -297,13 +295,8 @@ __oc_parse_get()
      fi
  }
  
@@ -89,7 +47,7 @@ index 9c7d488..cff4595 100644
  }
  
  __oc_get_resource()
-@@ -20474,13 +20511,18 @@ _oc_whoami()
+@@ -20474,13 +20467,31 @@ _oc_whoami()
      noun_aliases=()
  }
  
@@ -102,15 +60,28 @@ index 9c7d488..cff4595 100644
      command_aliases=()
  
      commands=()
++    commands+=("fields")
++    commands+=("images")
++    commands+=("modify-secret")
++    commands+=("neat")
++    commands+=("rbac-lookup")
++    commands+=("sick-pods")
++    commands+=("tmux-exec")
++    commands+=("topology")
++    commands+=("view-secret")
++    commands+=("warp")
++    commands+=("who-can")
++    commands+=("watch-namespace")
++    commands+=("tmux-exec")
++    commands+=("velero-annotate-all-volumes-for-pod")
 +    commands+=("delete-namespace-finalizer")
 +    commands+=("get-all-namespaced-resources")
-+    commands+=("velero-annotate-all-volumes-for-pod")
-+    commands+=("watch-namespace")
 +    commands+=("restart-af-services")
++    commands+=("af-arbitrary-command")
      commands+=("adm")
      commands+=("annotate")
      commands+=("api-resources")
-@@ -20637,3 +20679,4 @@ else
+@@ -20637,3 +20648,4 @@ else
  fi
  
  # ex: ts=4 sw=4 et filetype=sh

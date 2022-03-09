@@ -20,12 +20,12 @@ fi
 ## Results
 
 ```diff
-diff --git a/tmp/_kubectl-completions b/tmp/_kubectl-completions-patched
-index 4cbd4a7..320df73 100644
---- a/tmp/_kubectl-completions
-+++ b/tmp/_kubectl-completions-patched
-@@ -1,19 +1,46 @@
- 
+diff --git a/tmp/asdf3 b/tmp/asdf2
+index a556e1d1..dad6e497 100644
+--- a/tmp/asdf3
++++ b/tmp/asdf2
+@@ -1,19 +1,3 @@
+-
 -# Copyright 2016 The Kubernetes Authors.
 -#
 -# Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,52 +40,11 @@ index 4cbd4a7..320df73 100644
 -# See the License for the specific language governing permissions and
 -# limitations under the License.
 -# bash completion for kubectl                              -*- shell-script -*-
-+_kubectl_restart-af-services()
-+{
-+    last_command="kubectl_restart_af_services"
-+    flags=()
-+    two_word_flags=()
-+    local_nonpersistent_flags=()
-+    flags_with_completion=()
-+    flags_completion=()
-+
-+    flags+=("-h")
-+    flags+=("--minio")
-+    flags+=("--artifactory")
-+    flags+=("--no-dry-run")
-+    flags+=("-A")
-+    flags+=("-h")
-+    # flags+=("-r")
-+
-+    two_word_flags+=("-n")
-+    flags_with_completion+=("-n")
-+    flags_completion+=("_restart-af-services_completions")
-+
-+}
-+
-+_kubectl_watch-namespace()
-+{
-+    last_command="kubectl_watch_namespace"
-+    flags=()
-+    two_word_flags=()
-+    local_nonpersistent_flags=()
-+    flags_with_completion=()
-+    flags_completion=()
-+
-+    flags+=("-h")
-+    two_word_flags+=("-r")
-+    flags_with_completion+=("-r")
-+    flags_completion+=("_watch-namespace_completions")
-+
-+    two_word_flags+=("-n")
-+    flags_with_completion+=("-n")
-+    flags_completion+=("_watch-namespace_completions")
- 
-+}
+-
  __kubectl_debug()
  {
      if [[ -n ${BASH_COMP_DEBUG_FILE} ]]; then
-@@ -13728,13 +13755,18 @@ _kubectl_wait()
+@@ -12473,13 +12457,31 @@ _kubectl_wait()
      noun_aliases=()
  }
  
@@ -98,15 +57,28 @@ index 4cbd4a7..320df73 100644
      command_aliases=()
  
      commands=()
++    commands+=("fields")
++    commands+=("images")
++    commands+=("modify-secret")
++    commands+=("neat")
++    commands+=("rbac-lookup")
++    commands+=("sick-pods")
++    commands+=("tmux-exec")
++    commands+=("topology")
++    commands+=("view-secret")
++    commands+=("warp")
++    commands+=("who-can")
++    commands+=("watch-namespace")
++    commands+=("tmux-exec")
++    commands+=("velero-annotate-all-volumes-for-pod")
 +    commands+=("delete-namespace-finalizer")
 +    commands+=("get-all-namespaced-resources")
-+    commands+=("velero-annotate-all-volumes-for-pod")
-+    commands+=("watch-namespace")
 +    commands+=("restart-af-services")
++    commands+=("af-arbitrary-command")
+     commands+=("alpha")
      commands+=("annotate")
      commands+=("api-resources")
-     commands+=("api-versions")
-@@ -13901,3 +13933,4 @@ else
+@@ -12635,3 +12637,4 @@ else
  fi
  
  # ex: ts=4 sw=4 et filetype=sh
