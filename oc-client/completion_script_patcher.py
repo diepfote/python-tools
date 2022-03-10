@@ -50,6 +50,9 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 search_params = [
                     ('_oc_root_command', True, 'commands=\\(\\)'),  # put something into a function body at a specific location
                     ('__oc_get_namespaces'),  # replace entire function
+                    ('', True),  # no search parameters, prepend to completion script
+                    ('', True),  # no search parameters, prepend to completion script
+                    ('', True)  # no search parameters, prepend to completion script
                 ]
 
 # replacements has to match the number of
@@ -90,6 +93,73 @@ func_body_replacements.append(
 
 func_body_replacements.append('    _watch-namespace_completions')
 
+func_body_replacements.append(
+    """
+_oc_watch-namespace()
+{
+    last_command="oc_watch_namespace"
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("-h")
+    # flags+=("-r")
+    two_word_flags+=("-r")
+    flags_with_completion+=("-r")
+    flags_completion+=("_watch-namespace_completions")
+    # flags_completion+=("__oc_region_complete")
+
+    two_word_flags+=("-n")
+    flags_with_completion+=("-n")
+    flags_completion+=("_watch-namespace_completions")
+
+}
+""")
+func_body_replacements.append(
+    """
+_oc_restart-af-services()
+{
+    last_command="oc_restart_af_services"
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("-h")
+    flags+=("--minio")
+    flags+=("--artifactory")
+    flags+=("--no-dry-run")
+    flags+=("--no-primary")
+    flags+=("-A")
+
+    two_word_flags+=("-n")
+    flags_with_completion+=("-n")
+    flags_completion+=("_watch-namespace_completions")
+}
+""")
+func_body_replacements.append(
+    """
+_oc_af-arbitrary-command()
+{
+    last_command="oc_af_arbitrary_command"
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("-h")
+    flags+=("-A")
+    flags+=("-n")
+
+    two_word_flags+=("-n")
+    flags_with_completion+=("-n")
+    flags_completion+=("_watch-namespace_completions")
+}
+""")
 
 # compl_script = sys.stdin.read()
 with open(sys.argv[1], 'r') as f:

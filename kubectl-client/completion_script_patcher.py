@@ -48,6 +48,9 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 # ('oc function name', 'if body only', 'point in body to push into')
 search_params = [
                     ('_kubectl_root_command', True, 'commands=\\(\\)'),  # put something into a function body at a specific location
+                    ('', True),  # no search parameters, prepend to completion script
+                    ('', True),  # no search parameters, prepend to completion script
+                    ('', True)  # no search parameters, prepend to completion script
                 ]
 # replacements has to match the number of
 # search parameters, indexes connect them to the
@@ -84,6 +87,76 @@ func_body_replacements.append(
 )
 
 # -----------------------------------------------
+
+func_body_replacements.append(
+    """
+_kubectl_watch-namespace()
+{
+    last_command="kubectl_watch_namespace"
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("-h")
+    two_word_flags+=("-r")
+    flags_with_completion+=("-r")
+    flags_completion+=("_watch-namespace_completions")
+
+    two_word_flags+=("-n")
+    flags_with_completion+=("-n")
+    flags_completion+=("_watch-namespace_completions")
+
+}
+""")
+func_body_replacements.append(
+    """
+_kubectl_restart-af-services()
+{
+    last_command="kubectl_restart_af_services"
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("-h")
+    flags+=("--minio")
+    flags+=("--artifactory")
+    flags+=("--no-dry-run")
+    flags+=("--no-primary")
+    flags+=("-A")
+    flags+=("-h")
+    # flags+=("-r")
+
+    two_word_flags+=("-n")
+    flags_with_completion+=("-n")
+    flags_completion+=("_watch-namespace_completions")
+
+}
+""")
+func_body_replacements.append(
+    """
+_kubectl_af-arbitrary-command()
+{
+    last_command="kubectl_af_arbitrary_command"
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("-h")
+    flags+=("-A")
+    flags+=("-n")
+
+    two_word_flags+=("-n")
+    flags_with_completion+=("-n")
+    flags_completion+=("_watch-namespace_completions")
+}
+""")
+
 
 # compl_script = sys.stdin.read()
 with open(sys.argv[1], 'r') as f:
