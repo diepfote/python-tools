@@ -178,6 +178,10 @@ for index, _ in enumerate(search_params):
     start_of_file = False
 
     # TODO very poor design, to allow for a different number of expansion params in search_params
+    # a, *rest = [1, 2, 3]
+    # a = 1, rest = [2, 3]
+    # a, *middle, c = [1, 2, 3, 4]
+    # a = 1, middle = [2, 3], c = 4
     try:
         func_name, body, point_in_body = search_params[index]
         replacement, regexp = get_replacement(func_name, func_body_replacement, body, point_in_body)
