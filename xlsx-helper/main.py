@@ -17,6 +17,10 @@ for _, row in less_data.iterrows():
     if name != person_to_filter_for:
         continue
 
+    # add a day since otherwise we do not account for the entirity of
+    # the last day
+    end += 1
+
     print(f'{name}\t\t{start}\t{end}')
     event = Event()
     event.name = 'Bereitschaft'
