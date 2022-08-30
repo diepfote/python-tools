@@ -24,7 +24,6 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 
     if body:
         if point_in_body:
-            point_in_body = 'commands=\\(\\)'
             # pre point func body -> \3
             # post point func body -> \4
             regex = '(' + func_name + '\s*\\(\\)\s*\n{((.*?' + point_in_body + ')(.*?)^)})'
@@ -47,7 +46,12 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 
 # ('oc function name', 'if body only', 'point in body to push into')
 search_params = [
-                    ('_kubectl_root_command', True, 'commands=\\(\\)'),  # put something into a function body at a specific location
+                    # append to commands array in `_kubectl_root_command`
+                    ('_kubectl_root_command', True, 'commands=\\(\\)'),
+
+                    # replace flag_completion function for namespaces in `_kubectl.*` functions
+                    ('__kubectl_handle_go_custom_completion', True, '__kubectl_debug \"\$\{FUNCNAME\[0\]\}: calling \$\{requestComp\}\"'),
+
                     ('', True),  # no search parameters, prepend to completion script
                     ('', True),  # no search parameters, prepend to completion script
                     ('', True)  # no search parameters, prepend to completion script
@@ -84,6 +88,26 @@ func_body_replacements.append(
     '\n' +
     '\n'.join(kubernetes_bin_commands) +
     additional_commands
+)
+
+# -----------------------------------------------
+
+func_body_replacements.append(
+    '\n' +
+    '    if echo "$requestComp" | grep -qE -- \'--namespace|-n\'; then' +
+    '\n' +
+    '           __kubectl_debug \'[.] Calling _watch-namespace_completions\'' +
+    '\n' +
+    '           _watch-namespace_completions' +
+    '\n' +
+    '          return' +
+    '\n' +
+    '    else' +
+    '\n' +
+    '           __kubectl_debug \'[.] not calling _watch-namespace_completions\'' +
+    '\n' +
+    '    fi' +
+    '\n'
 )
 
 # -----------------------------------------------
