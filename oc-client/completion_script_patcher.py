@@ -25,7 +25,6 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 
     if body:
         if point_in_body:
-            point_in_body = 'commands=\\(\\)'
             # pre point func body -> \3
             # post point func body -> \4
             regex = '(' + func_name + '\s*\\(\\)\s*\n{((.*?' + point_in_body + ')(.*?)^)})'
