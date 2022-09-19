@@ -14,12 +14,10 @@ for _, row in less_data.iterrows():
     name = row[0]
     start = row[1]
     end = row[2]
+    # add a day since otherwise we do not account for the entirety of the last day
+    end += pd.DateOffset(1)
     if name != person_to_filter_for:
         continue
-
-    # add a day since otherwise we do not account for the entirity of
-    # the last day
-    end += 1
 
     print(f'{name}\t\t{start}\t{end}')
     event = Event()
