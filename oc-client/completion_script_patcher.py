@@ -25,15 +25,15 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 
     if body:
         if point_in_body:
-            # pre point func body -> \3
-            # post point func body -> \4
-            regex = '(' + func_name + '\s*\\(\\)\s*\n{((.*?' + point_in_body + ')(.*?)^)})'
+            # pre point func body -> \4
+            # post point func body -> \5
+            regex = '(' + func_name + '\s*\\(\\)\s*(\\n{|{\\n)((.*?' + point_in_body + ')(.*?)^)})'
             regexp = re.compile(regex, (re.M|re.DOTALL))
 
             replacement = func_name + ' () {\n' + \
-                          '\\3' + \
-                          func_body_replacement + \
                           '\\4' + \
+                          func_body_replacement + \
+                          '\\5' + \
                           '}'
         else:
             raise Exception('Point in body not true')

@@ -24,16 +24,18 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 
     if body:
         if point_in_body:
-            # pre point func body -> \3
-            # post point func body -> \4
-            regex = '(' + func_name + '\s*\\(\\)\s*\n{((.*?' + point_in_body + ')(.*?)^)})'
+            # pre point func body -> \4
+            # post point func body -> \5
+            regex = '(' + func_name + '\s*\\(\\)\s*(\\n{|{\\n)((.*?' + point_in_body + ')(.*?)^)})'
             regexp = re.compile(regex, (re.M|re.DOTALL))
+            with open(f'/tmp/debug-{os.path.basename(sys.argv[0])}-kubectl.txt', 'w') as f:
+                f.write(f'{regex}\n')
 
             replacement = func_name + ' () {\n' + \
-                          '\\3' + \
-                          func_body_replacement + \
                           '\\4' + \
-                          '}'
+                          func_body_replacement + \
+                          '\\5' + \
+                          '\n}'
         else:
             raise Exception('Point in body not true')
     else:
@@ -46,11 +48,13 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 
 # ('oc function name', 'if body only', 'point in body to push into')
 search_params = [
+                    # TODO this function no longer exists,
+                    # thus `kubectl __completeNoDesc  ''` output needs to be used and extended
+                    #
                     # append to commands array in `_kubectl_root_command`
                     ('_kubectl_root_command', True, 'commands=\\(\\)'),
-
                     # replace flag_completion function for namespaces in `_kubectl.*` functions
-                    ('__kubectl_handle_go_custom_completion', True, '__kubectl_debug \"\$\{FUNCNAME\[0\]\}: calling \$\{requestComp\}\"'),
+                    ('__kubectl_get_completion_results', True, '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"'),
 
                     ('', True),  # no search parameters, prepend to completion script
                     ('', True),  # no search parameters, prepend to completion script
