@@ -52,7 +52,7 @@ search_params = [
                     # thus `kubectl __completeNoDesc  ''` output needs to be used and extended
                     #
                     # append to commands array in `_kubectl_root_command`
-                    ('_kubectl_root_command', True, 'commands=\\(\\)'),
+                    ('__kubectl_get_completion_results', True, '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"'),
                     # replace flag_completion function for namespaces in `_kubectl.*` functions
                     ('__kubectl_get_completion_results', True, '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"'),
 
@@ -66,32 +66,45 @@ search_params = [
 func_body_replacements = []
 
 # -----------------------------------------------
-def format_for_patching(plugin):
-    return 4 * ' ' + 'commands+=("' + plugin + '")'
+def format(plugin):
+    return 11 * ' ' + '_tmp_general+=("' + plugin + '")'
 
+kubectl_default_commands = subprocess.check_output("kubectl __completeNoDesc '' 2>/dev/null", shell=True).decode('utf-8').splitlines()[:-1]
 krew_plugins = subprocess.check_output(['kubectl', 'krew', 'list']).decode('utf-8').splitlines()
-krew_plugins_commands = \
-    [format_for_patching(plugin) for plugin in krew_plugins]
 
 kubernetes_bin_dir = os.environ['HOME'] + '/Documents/scripts/kubernetes/bin'
 prefix = 'kubectl-'
 kubernetes_bin_files = [bin_file.replace(prefix, '' ).replace('_', '-') \
         for bin_file in os.listdir(kubernetes_bin_dir) \
         if bin_file.startswith(prefix)]
-kubernetes_bin_commands = \
-    [format_for_patching(bin_file) for bin_file in kubernetes_bin_files]
 
-additional_commands = \
-        """
-    commands+=("restart-af-services")
-    commands+=("af-arbitrary-command")"""
+additional_commands = ['restart-af-services', 'af-arbitrary-command']
+
+plugin_patch = []
+for plugin in kubectl_default_commands + kubernetes_bin_files + krew_plugins + additional_commands:
+    plugin_patch.append(format(plugin))
+
 
 func_body_replacements.append(
     '\n' +
-    '\n'.join(krew_plugins_commands) +
+    '    if [ "$lastChar" = "" ]; then' +
     '\n' +
-    '\n'.join(kubernetes_bin_commands) +
-    additional_commands
+    '           __kubectl_debug \'[.] Calling custom root command completions\'' +
+    '\n' +
+    '           _tmp_general=()' +
+    '\n' +
+    '\n'.join(plugin_patch) +
+    '\n' +
+    '           export COMPREPLY=("${_tmp_general[@]}");' +
+    '\n' +
+    '          return' +
+    '\n' +
+    '    else' +
+    '\n' +
+    '           __kubectl_debug \'[.] not calling custom root command completions\'' +
+    '\n' +
+    '    fi' +
+    '\n'
 )
 
 # -----------------------------------------------
