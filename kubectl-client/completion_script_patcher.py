@@ -66,8 +66,8 @@ search_params = [
 func_body_replacements = []
 
 # -----------------------------------------------
-def format(plugin):
-    return 11 * ' ' + '_tmp_general+=("' + plugin + '")'
+def format(plugin, array_name):
+    return 10 * ' ' + array_name + '+=("' + plugin + '")'
 
 kubectl_default_commands = subprocess.check_output("kubectl __completeNoDesc '' 2>/dev/null", shell=True).decode('utf-8').splitlines()[:-1]
 krew_plugins = subprocess.check_output(['kubectl', 'krew', 'list']).decode('utf-8').splitlines()
@@ -82,20 +82,24 @@ additional_commands = ['restart-af-services', 'af-arbitrary-command']
 
 plugin_patch = []
 for plugin in kubectl_default_commands + kubernetes_bin_files + krew_plugins + additional_commands:
-    plugin_patch.append(format(plugin))
+    plugin_patch.append(format(plugin, array_name='_all_commands'))
 
 
 func_body_replacements.append(
     '\n' +
-    '    if [ "$lastChar" = "" ]; then' +
+    '    if [ ${#words[@]} -lt 3 ]; then' +
     '\n' +
-    '           __kubectl_debug \'[.] Calling custom root command completions\'' +
+    '          __kubectl_debug \'[.] Calling custom root command completions\'' +
     '\n' +
-    '           _tmp_general=()' +
+    '          _all_commands=()' +
     '\n' +
     '\n'.join(plugin_patch) +
     '\n' +
-    '           export COMPREPLY=("${_tmp_general[@]}");' +
+    '          read -r -d \'\' -a _tmp_general < <(compgen -W "$(echo -e "${_all_commands[@]}")" -- "$lastParam")' +
+    '\n' +
+    '          export COMPREPLY=("${_tmp_general[@]}");' +
+    '\n' +
+    '          __kubectl_debug "[.] compl returned ${_tmp_general[*]}"' +
     '\n' +
     '          return' +
     '\n' +
