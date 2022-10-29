@@ -12,5 +12,5 @@ def get_toml_value(filename, option_name):
 
     return config.get('default', option_name)
 
-print(get_toml_value(sys.argv[1], sys.argv[2]))
+print(get_toml_value(sys.argv[1], sys.argv[2]), end='')
 
