@@ -48,10 +48,9 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
 
 # ('oc function name', 'if body only', 'point in body to push into')
 search_params = [
-                    # TODO this function no longer exists,
-                    # thus `kubectl __completeNoDesc  ''` output needs to be used and extended
-                    #
-                    # append to commands array in `_kubectl_root_command`
+                    # ensure root command completions and namespace completions will not be overriden
+                    ('__kubectl_handle_completion_types', True, 'case \$COMP_TYPE in'),
+                    # extend root commands
                     ('__kubectl_get_completion_results', True, '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"'),
                     # replace flag_completion function for namespaces in `_kubectl.*` functions
                     ('__kubectl_get_completion_results', True, '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"'),
@@ -84,7 +83,15 @@ plugin_patch = []
 for plugin in kubectl_default_commands + kubernetes_bin_files + krew_plugins + additional_commands:
     plugin_patch.append(format(plugin, array_name='_all_commands'))
 
-
+func_body_replacements.append(
+    '\n' +
+    '        63)' +
+    '\n' +
+    '          return' +
+    '\n' +
+    '          ;;' +
+    '\n'
+)
 func_body_replacements.append(
     '\n' +
     '    if [ ${#words[@]} -lt 3 ]; then' +
@@ -95,11 +102,15 @@ func_body_replacements.append(
     '\n' +
     '\n'.join(plugin_patch) +
     '\n' +
-    '          read -r -d \'\' -a _tmp_general < <(compgen -W "$(echo -e "${_all_commands[@]}")" -- "$lastParam")' +
+    '          COMPREPLY=()' +
     '\n' +
-    '          export COMPREPLY=("${_tmp_general[@]}");' +
+    '          while IFS='' read -r line; do' +
     '\n' +
-    '          __kubectl_debug "[.] compl returned ${_tmp_general[*]}"' +
+    '            COMPREPLY+=("$line")' +
+    '\n' +
+    '          done < <(compgen -W "$(echo -e "${_all_commands[@]}")" -- "$lastParam")' +
+    '\n' +
+    '          __kubectl_debug "[.] compl returned ${COMPREPLY[*]}"' +
     '\n' +
     '          return' +
     '\n' +
