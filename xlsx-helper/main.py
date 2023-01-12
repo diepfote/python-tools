@@ -26,6 +26,8 @@ for _, row in less_data.iterrows():
     event.end = end
     calendar.events.add(event)
 
-with open('/tmp/bereitschaft.ics', 'w') as f:
+ics_name = '/tmp/bereitschaft.ics'
+with open(ics_name, 'w') as f:
     f.write(str(calendar))
+    print(f'Wrote file to `{ics_name}`.', file=sys.stderr)
 
