@@ -6,11 +6,11 @@ from configparser import ConfigParser
 
 # import snoop  # print function args
 # @snoop
-def get_toml_value(filename, option_name):
+def get_toml_value(_, filename, option_name, section='default'):
     config = ConfigParser()
     config.read(filename)
 
-    return config.get('default', option_name)
+    return config.get(section, option_name)
 
-print(get_toml_value(sys.argv[1], sys.argv[2]), end='')
+print(get_toml_value(*sys.argv), end='')
 
