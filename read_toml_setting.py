@@ -13,6 +13,11 @@ def get_toml_value(_, filename, option_name, section='default'):
 
     return config.get(section, option_name)
 
+# TODO if DEBUG
+# print(sys.argv)
+# with open('/tmp/test.txt', 'w') as f:
+#     f.write(str(sys.argv))
+
 try:
     print(get_toml_value(*sys.argv), end='')
 except Exception as e:
