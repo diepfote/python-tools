@@ -153,6 +153,7 @@ _oc_af-arbitrary-command()
     flags+=("-h")
     flags+=("-A")
     flags+=("-n")
+    flags+=("-c")
 
     two_word_flags+=("-n")
     flags_with_completion+=("-n")
