@@ -46,19 +46,8 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
     return (replacement, regexp)
 
 
-# ('oc function name', 'if body only', 'point in body to push into')
-search_params = [
-                    # ensure root command completions and namespace completions will not be overriden
-                    ('__kubectl_handle_completion_types', True, 'case \$COMP_TYPE in'),
-                    # extend root commands
-                    ('__kubectl_get_completion_results', True, '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"'),
-                    # replace flag_completion function for namespaces in `_kubectl.*` functions
-                    ('__kubectl_get_completion_results', True, '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"'),
+search_params = []
 
-                    ('', True),  # no search parameters, prepend to completion script
-                    ('', True),  # no search parameters, prepend to completion script
-                    ('', True)  # no search parameters, prepend to completion script
-                ]
 # replacements has to match the number of
 # search parameters, indexes connect them to the
 # same search-replace iteration
@@ -83,6 +72,8 @@ plugin_patch = []
 for plugin in kubectl_default_commands + kubernetes_bin_files + krew_plugins + additional_commands:
     plugin_patch.append(format(plugin, array_name='_all_commands'))
 
+# ensure root command completions and namespace completions will not be overriden
+search_params.append(['__kubectl_handle_completion_types', 'prepend', 'case \$COMP_TYPE in']),
 func_body_replacements.append(
     '\n' +
     '        63)' +
@@ -92,6 +83,9 @@ func_body_replacements.append(
     '          ;;' +
     '\n'
 )
+
+# replace flag_completion function for namespaces in `_kubectl.*` functions
+search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"']),
 func_body_replacements.append(
     '\n' +
     '    if [ ${#words[@]} -lt 3 ]; then' +
@@ -124,6 +118,8 @@ func_body_replacements.append(
 
 # -----------------------------------------------
 
+# extend root commands
+search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"']),
 func_body_replacements.append(
     '\n' +
     '    if echo "$requestComp" | grep -qE -- \'--namespace|-n\'; then' +
@@ -144,6 +140,7 @@ func_body_replacements.append(
 
 # -----------------------------------------------
 
+search_params.append(['', 'prepend']),  # no search parameters, prepend to completion script
 func_body_replacements.append(
     """
 _kubectl_watch-namespace()
@@ -166,6 +163,8 @@ _kubectl_watch-namespace()
 
 }
 """)
+
+search_params.append(['', 'prepend']),  # no search parameters, prepend to completion script
 func_body_replacements.append(
     """
 _kubectl_restart-af-services()
@@ -192,6 +191,8 @@ _kubectl_restart-af-services()
 
 }
 """)
+
+search_params.append(['', 'prepend']),  # no search parameters, prepend to completion script
 func_body_replacements.append(
     """
 _kubectl_af-arbitrary-command()
@@ -214,6 +215,17 @@ _kubectl_af-arbitrary-command()
 }
 """)
 
+search_params.append(['if \[\[ \$\(type -t compopt\) = "builtin" \]\]; then\\n\s+complete -o default -F __start_kubectl kubectl.*?fi'])
+func_body_replacements.append(
+    '''
+if [[ $(type -t compopt) = "builtin" ]]; then
+    complete -o default -F __start_kubectl k
+    complete -o default -F __start_kubectl kubectl
+else
+    complete -o default -o nospace -F __start_kubectl k
+    complete -o default -o nospace -F __start_kubectl kubectl
+fi
+''')
 
 # compl_script = sys.stdin.read()
 with open(sys.argv[1], 'r') as f:
@@ -223,6 +235,9 @@ with open(sys.argv[1], 'r') as f:
     # completion script
     compl_script = compl_script.split('\n', 16)[16]
 
+    # remove vim mode line at the end
+    compl_script = compl_script.rsplit('\n', 2)[0]
+
 if len(search_params) != len(func_body_replacements):
     raise Exception('Number of search parameters not equal number of replacement strings')
 
@@ -230,34 +245,35 @@ if len(search_params) != len(func_body_replacements):
 for index, _ in enumerate(search_params):
 
     func_body_replacement = func_body_replacements[index]
-    start_of_file = False
+    where = ''
 
     # TODO very poor design, to allow for a different number of expansion params in search_params
     # a, *rest = [1, 2, 3]
     # a = 1, rest = [2, 3]
     # a, *middle, c = [1, 2, 3, 4]
     # a = 1, middle = [2, 3], c = 4
-    try:
+    if len(search_params[index]) == 3:
         func_name, body, point_in_body = search_params[index]
         replacement, regexp = get_replacement(func_name, func_body_replacement, body, point_in_body)
-    except:
-        try:
-            _, start_of_file = search_params[index]
-
-
-        except:
-            func_name = search_params[index]
-            replacement, regexp = get_replacement(func_name, func_body_replacement)
-
+    elif len(search_params[index]) == 2:
+        _, where = search_params[index]
+    elif len(search_params[index]) == 1:
+        regex = search_params[index][0]
+        replacement = func_body_replacement
+        regexp = re.compile(regex, re.DOTALL)
+    else:
+        raise Exception('Invalid number of parameters to expand')
 
     # import pdb
     # pdb.set_trace()
     # print(regexp.findall(compl_script))
 
-    if start_of_file:
-        # just prepend
+    if where == 'prepend':
         compl_script = func_body_replacement + compl_script
+    elif where == 'append':
+        compl_script = compl_script + func_body_replacement
     else:
+        # if `where` is not set perform replacement
         compl_script = regexp.sub(replacement, compl_script)
 
 print(compl_script)
