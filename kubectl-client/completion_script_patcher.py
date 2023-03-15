@@ -84,7 +84,7 @@ func_body_replacements.append(
     '\n'
 )
 
-# replace flag_completion function for namespaces in `_kubectl.*` functions
+# extend root commands
 search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"']),
 func_body_replacements.append(
     '\n' +
@@ -118,7 +118,7 @@ func_body_replacements.append(
 
 # -----------------------------------------------
 
-# extend root commands
+# replace flag_completion function for namespaces in `_kubectl.*` functions
 search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"']),
 func_body_replacements.append(
     '\n' +
