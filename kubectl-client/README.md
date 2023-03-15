@@ -1,5 +1,7 @@
 # kubectl client patch script
 
+e.g. add bash completions for krew plugins
+
 ## How to
 
 ```none
