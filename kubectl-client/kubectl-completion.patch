@@ -1,0 +1,259 @@
+diff --git a/tmp/_kubectl-completions b/tmp/_kubectl-completions-patched
+index 2cab171..d8234c5 100644
+--- a/tmp/_kubectl-completions
++++ b/tmp/_kubectl-completions-patched
+@@ -1,19 +1,66 @@
+ 
+-# Copyright 2016 The Kubernetes Authors.
+-#
+-# Licensed under the Apache License, Version 2.0 (the "License");
+-# you may not use this file except in compliance with the License.
+-# You may obtain a copy of the License at
+-#
+-#     http://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+-# bash completion V2 for kubectl                              -*- shell-script -*-
++_kubectl_af-arbitrary-command()
++{
++    last_command="kubectl_af_arbitrary_command"
++    flags=()
++    two_word_flags=()
++    local_nonpersistent_flags=()
++    flags_with_completion=()
++    flags_completion=()
++
++    flags+=("-h")
++    flags+=("-A")
++    flags+=("-n")
++    flags+=("-c")
++
++    two_word_flags+=("-n")
++    flags_with_completion+=("-n")
++    flags_completion+=("_watch-namespace_completions")
++}
++
++_kubectl_restart-af-services()
++{
++    last_command="kubectl_restart_af_services"
++    flags=()
++    two_word_flags=()
++    local_nonpersistent_flags=()
++    flags_with_completion=()
++    flags_completion=()
++
++    flags+=("-h")
++    flags+=("--minio")
++    flags+=("--artifactory")
++    flags+=("--no-dry-run")
++    flags+=("--no-primary")
++    flags+=("-A")
++    flags+=("-h")
++    # flags+=("-r")
++
++    two_word_flags+=("-n")
++    flags_with_completion+=("-n")
++    flags_completion+=("_watch-namespace_completions")
++
++}
+ 
++_kubectl_watch-namespace()
++{
++    last_command="kubectl_watch_namespace"
++    flags=()
++    two_word_flags=()
++    local_nonpersistent_flags=()
++    flags_with_completion=()
++    flags_completion=()
++
++    flags+=("-h")
++    two_word_flags+=("-r")
++    flags_with_completion+=("-r")
++    flags_completion+=("_watch-namespace_completions")
++
++    two_word_flags+=("-n")
++    flags_with_completion+=("-n")
++    flags_completion+=("_watch-namespace_completions")
++
++}
+ __kubectl_debug()
+ {
+     if [[ -n ${BASH_COMP_DEBUG_FILE:-} ]]; then
+@@ -31,7 +78,7 @@ __kubectl_init_completion()
+ 
+ # This function calls the kubectl program to obtain the completion
+ # results and the directive.  It fills the 'out' and 'directive' vars.
+-__kubectl_get_completion_results() {
++__kubectl_get_completion_results () {
+     local requestComp lastParam lastChar args
+ 
+     # Prepare the command to request completions for the program.
+@@ -42,6 +89,116 @@ __kubectl_get_completion_results() {
+     lastParam=${words[$((${#words[@]}-1))]}
+     lastChar=${lastParam:$((${#lastParam}-1)):1}
+     __kubectl_debug "lastParam ${lastParam}, lastChar ${lastChar}"
++    if echo "$requestComp" | grep -qE -- '--namespace|-n'; then
++           __kubectl_debug '[.] Calling _watch-namespace_completions'
++           _watch-namespace_completions
++          return
++    else
++           __kubectl_debug '[.] not calling _watch-namespace_completions'
++    fi
++
++    if [ ${#words[@]} -lt 3 ]; then
++          __kubectl_debug '[.] Calling custom root command completions'
++          _all_commands=()
++          _all_commands+=("af-arbitrary-command")
++          _all_commands+=("alpha")
++          _all_commands+=("annotate")
++          _all_commands+=("api-resources")
++          _all_commands+=("api-versions")
++          _all_commands+=("apply")
++          _all_commands+=("attach")
++          _all_commands+=("auth")
++          _all_commands+=("autoscale")
++          _all_commands+=("certificate")
++          _all_commands+=("cluster-info")
++          _all_commands+=("completion")
++          _all_commands+=("config")
++          _all_commands+=("cordon")
++          _all_commands+=("cp")
++          _all_commands+=("create")
++          _all_commands+=("debug")
++          _all_commands+=("delete")
++          _all_commands+=("delete-namespace-finalizer")
++          _all_commands+=("describe")
++          _all_commands+=("diff")
++          _all_commands+=("drain")
++          _all_commands+=("edit")
++          _all_commands+=("events")
++          _all_commands+=("exec")
++          _all_commands+=("explain")
++          _all_commands+=("expose")
++          _all_commands+=("fields")
++          _all_commands+=("get")
++          _all_commands+=("get-all-resources")
++          _all_commands+=("help")
++          _all_commands+=("images")
++          _all_commands+=("krew")
++          _all_commands+=("kustomize")
++          _all_commands+=("label")
++          _all_commands+=("logs")
++          _all_commands+=("modify-secret")
++          _all_commands+=("neat")
++          _all_commands+=("node-shell")
++          _all_commands+=("non-running-nodes")
++          _all_commands+=("non-running-pods")
++          _all_commands+=("options")
++          _all_commands+=("patch")
++          _all_commands+=("plugin")
++          _all_commands+=("port-forward")
++          _all_commands+=("proxy")
++          _all_commands+=("rbac-lookup")
++          _all_commands+=("replace")
++          _all_commands+=("restart-af-services")
++          _all_commands+=("rollout")
++          _all_commands+=("run")
++          _all_commands+=("scale")
++          _all_commands+=("set")
++          _all_commands+=("sick-pods")
++          _all_commands+=("taint")
++          _all_commands+=("tmux-exec")
++          _all_commands+=("top")
++          _all_commands+=("topology")
++          _all_commands+=("ttsum")
++          _all_commands+=("uncordon")
++          _all_commands+=("velero-annotate-all-volumes-for-pod")
++          _all_commands+=("version")
++          _all_commands+=("view-secret")
++          _all_commands+=("wait")
++          _all_commands+=("warp")
++          _all_commands+=("watch-namespace")
++          _all_commands+=("who-can")
++          _all_commands+=("get-all-resources")
++          _all_commands+=("watch-namespace")
++          _all_commands+=("tmux-exec")
++          _all_commands+=("velero-annotate-all-volumes-for-pod")
++          _all_commands+=("delete-namespace-finalizer")
++          _all_commands+=("non-running-pods")
++          _all_commands+=("non-running-nodes")
++          _all_commands+=("fields")
++          _all_commands+=("images")
++          _all_commands+=("modify-secret")
++          _all_commands+=("neat")
++          _all_commands+=("node-shell")
++          _all_commands+=("rbac-lookup")
++          _all_commands+=("sick-pods")
++          _all_commands+=("tmux-exec")
++          _all_commands+=("topology")
++          _all_commands+=("ttsum")
++          _all_commands+=("view-secret")
++          _all_commands+=("warp")
++          _all_commands+=("who-can")
++          _all_commands+=("restart-af-services")
++          _all_commands+=("af-arbitrary-command")
++          COMPREPLY=()
++          while IFS= read -r line; do
++            COMPREPLY+=("$line")
++          done < <(compgen -W "$(echo -e "${_all_commands[@]}")" -- "$lastParam")
++          __kubectl_debug "[.] compl returned ${COMPREPLY[*]}"
++          return
++    else
++           __kubectl_debug '[.] not calling custom root command completions'
++    fi
++
+ 
+     if [ -z "${cur}" ] && [ "${lastChar}" != "=" ]; then
+         # If the last parameter is complete (there is a space following it)
+@@ -71,6 +228,8 @@ __kubectl_get_completion_results() {
+     fi
+     __kubectl_debug "The completion directive is: ${directive}"
+     __kubectl_debug "The completions are: ${out}"
++
++
+ }
+ 
+ __kubectl_process_completion_results() {
+@@ -179,10 +338,14 @@ __kubectl_extract_activeHelp() {
+     done < <(printf "%s\n" "${out}")
+ }
+ 
+-__kubectl_handle_completion_types() {
++__kubectl_handle_completion_types () {
+     __kubectl_debug "__kubectl_handle_completion_types: COMP_TYPE is $COMP_TYPE"
+ 
+     case $COMP_TYPE in
++        63)
++          return
++          ;;
++
+     37|42)
+         # Type: menu-complete/menu-complete-backward and insert-completions
+         # If the user requested inserting one completion at a time, or all
+@@ -205,6 +368,7 @@ __kubectl_handle_completion_types() {
+         __kubectl_handle_standard_completion_case
+         ;;
+     esac
++
+ }
+ 
+ __kubectl_handle_standard_completion_case() {
+@@ -330,10 +494,13 @@ __start_kubectl()
+     __kubectl_process_completion_results
+ }
+ 
++
+ if [[ $(type -t compopt) = "builtin" ]]; then
++    complete -o default -F __start_kubectl k
+     complete -o default -F __start_kubectl kubectl
+ else
++    complete -o default -o nospace -F __start_kubectl k
+     complete -o default -o nospace -F __start_kubectl kubectl
+ fi
+ 
+-# ex: ts=4 sw=4 et filetype=sh
++
