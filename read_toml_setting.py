@@ -9,7 +9,10 @@ from configparser import ConfigParser
 # @snoop
 def get_toml_value(_, filename, option_name, section='default'):
     config = ConfigParser()
-    config.read(filename)
+    try:
+        config.read(filename)
+    except:
+        config.read(filename, encoding="latin-1")
 
     return config.get(section, option_name)
 
