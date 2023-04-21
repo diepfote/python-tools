@@ -13,13 +13,16 @@ import re
 import sys
 
 from urllib.parse import unquote, quote
-
+op_name = os.path.basename(sys.argv[0])
 operations = {'urldecode': unquote, 'urlencode': quote}
-op = operations[os.path.basename(sys.argv[0])]
+op = operations[op_name]
 
 if len(sys.argv) > 2 and sys.argv[1] == '--oauth2':
+    if op_name != 'urldecode':
+        print('[!] unsupported for this operation', file=sys.stderr)
+        exit(1)
+
     url = sys.argv[2]
-    # TODO refactor these procedures require unquote
     url = unquote(url)
     url = url.split('&g0.tab=1')[0]
     url = re.sub('/oauth2/[^/]+/', '/', url)
