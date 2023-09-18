@@ -66,7 +66,7 @@ kubernetes_bin_files = [bin_file.replace(prefix, '' ).replace('_', '-') \
         for bin_file in os.listdir(kubernetes_bin_dir) \
         if bin_file.startswith(prefix)]
 
-additional_commands = ['restart-af-services', 'af-arbitrary-command']
+additional_commands = ['all-of-a-service']
 
 plugin_patch = []
 for plugin in kubectl_default_commands + kubernetes_bin_files + krew_plugins + additional_commands:
@@ -122,7 +122,15 @@ func_body_replacements.append(
 search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"']),
 func_body_replacements.append(
     '\n' +
-    '    if echo "$requestComp" | grep -qE -- \'--namespace|-n\'; then' +
+    '    if echo "$requestComp" | grep -qE -- \'all-of-a-service\'; then' +
+    '\n' +
+    '           __kubectl_debug \'[.] Calling _all-of-a-service_completions\'' +
+    '\n' +
+    '           _all-of-a-service_completions' +
+    '\n' +
+    '          return' +
+    '\n' +
+    '    elif echo "$requestComp" | grep -qE -- \'--namespace|-n\'; then' +
     '\n' +
     '           __kubectl_debug \'[.] Calling _watch-namespace_completions\'' +
     '\n' +
@@ -140,80 +148,6 @@ func_body_replacements.append(
 
 # -----------------------------------------------
 
-search_params.append(['', 'prepend']),  # no search parameters, prepend to completion script
-func_body_replacements.append(
-    """
-_kubectl_watch-namespace()
-{
-    last_command="kubectl_watch_namespace"
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("-h")
-    two_word_flags+=("-r")
-    flags_with_completion+=("-r")
-    flags_completion+=("_watch-namespace_completions")
-
-    two_word_flags+=("-n")
-    flags_with_completion+=("-n")
-    flags_completion+=("_watch-namespace_completions")
-
-}
-""")
-
-search_params.append(['', 'prepend']),  # no search parameters, prepend to completion script
-func_body_replacements.append(
-    """
-_kubectl_restart-af-services()
-{
-    last_command="kubectl_restart_af_services"
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("-h")
-    flags+=("--minio")
-    flags+=("--artifactory")
-    flags+=("--no-dry-run")
-    flags+=("--no-primary")
-    flags+=("-A")
-    flags+=("-h")
-    # flags+=("-r")
-
-    two_word_flags+=("-n")
-    flags_with_completion+=("-n")
-    flags_completion+=("_watch-namespace_completions")
-
-}
-""")
-
-search_params.append(['', 'prepend']),  # no search parameters, prepend to completion script
-func_body_replacements.append(
-    """
-_kubectl_af-arbitrary-command()
-{
-    last_command="kubectl_af_arbitrary_command"
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("-h")
-    flags+=("-A")
-    flags+=("-n")
-    flags+=("-c")
-
-    two_word_flags+=("-n")
-    flags_with_completion+=("-n")
-    flags_completion+=("_watch-namespace_completions")
-}
-""")
 
 search_params.append(['if \[\[ \$\(type -t compopt\) = "builtin" \]\]; then\\n\s+complete -o default -F __start_kubectl kubectl.*?fi'])
 func_body_replacements.append(
