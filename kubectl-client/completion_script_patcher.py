@@ -19,14 +19,14 @@ def get_replacement(func_name, func_body_replacement, body=False, point_in_body=
     # and
     # function body -> \2
     #
-    regex = '(' + func_name + '\s*\\(\\)\s*\n{(.*?^)})'
+    regex = '(' + func_name + '\\s*\\(\\)\\s*\n{(.*?^)})'
     regexp = re.compile(regex, (re.M|re.DOTALL))
 
     if body:
         if point_in_body:
             # pre point func body -> \4
             # post point func body -> \5
-            regex = '(' + func_name + '\s*\\(\\)\s*(\\n{|{\\n)((.*?' + point_in_body + ')(.*?)^)})'
+            regex = '(' + func_name + '\\s*\\(\\)\\s*(\\n{|{\\n)((.*?' + point_in_body + ')(.*?)^)})'
             regexp = re.compile(regex, (re.M|re.DOTALL))
             with open(f'/tmp/debug-{os.path.basename(sys.argv[0])}-kubectl.txt', 'w') as f:
                 f.write(f'{regex}\n')
@@ -73,7 +73,7 @@ for plugin in kubectl_default_commands + kubernetes_bin_files + krew_plugins + a
     plugin_patch.append(format(plugin, array_name='_all_commands'))
 
 # ensure root command completions and namespace completions will not be overriden
-search_params.append(['__kubectl_handle_completion_types', 'prepend', 'case \$COMP_TYPE in']),
+search_params.append(['__kubectl_handle_completion_types', 'prepend', 'case \\$COMP_TYPE in']),
 func_body_replacements.append(
     '\n' +
     '        63)' +
@@ -85,7 +85,7 @@ func_body_replacements.append(
 )
 
 # extend root commands
-search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"']),
+search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \\$\\{lastParam\\}, lastChar \\$\\{lastChar\\}\\"']),
 func_body_replacements.append(
     '\n' +
     '    if [ ${#words[@]} -lt 3 ]; then' +
@@ -119,7 +119,7 @@ func_body_replacements.append(
 # -----------------------------------------------
 
 # replace flag_completion function for namespaces in `_kubectl.*` functions
-search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \$\{lastParam\}, lastChar \$\{lastChar\}\\"']),
+search_params.append(['__kubectl_get_completion_results', 'prepend', '__kubectl_debug \\"lastParam \\$\\{lastParam\\}, lastChar \\$\\{lastChar\\}\\"']),
 func_body_replacements.append(
     '\n' +
     '    if echo "$requestComp" | grep -qE -- \'all-of-a-service\'; then' +
@@ -149,7 +149,7 @@ func_body_replacements.append(
 # -----------------------------------------------
 
 
-search_params.append(['if \[\[ \$\(type -t compopt\) = "builtin" \]\]; then\\n\s+complete -o default -F __start_kubectl kubectl.*?fi'])
+search_params.append(['if \\[\\[ \\$\\(type -t compopt\\) = "builtin" \\]\\]; then\\n\\s+complete -o default -F __start_kubectl kubectl.*?fi'])
 func_body_replacements.append(
     '''
 if [[ $(type -t compopt) = "builtin" ]]; then
