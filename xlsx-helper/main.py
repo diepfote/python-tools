@@ -1,6 +1,7 @@
+import sys
+
 from ics import Calendar, Event
 import pandas as pd
-import sys
 
 df = pd.read_excel(sys.argv[1])
 
@@ -12,14 +13,12 @@ else:
 
 less_data = df.loc[:, ['Bereitschaft', 'Column1', 'Column12']]
 
-calendar= Calendar()
+calendar = Calendar()
 
 for _, row in less_data.iterrows():
     name = row[0]
     start = row[1]
     end = row[2]
-    # add a day since otherwise we do not account for the entirety of the last day
-    end += pd.DateOffset(1)
 
     event = Event()
 
