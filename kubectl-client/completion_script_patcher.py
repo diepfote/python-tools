@@ -66,7 +66,7 @@ kubernetes_bin_files = [bin_file.replace(prefix, '' ).replace('_', '-') \
         for bin_file in os.listdir(kubernetes_bin_dir) \
         if bin_file.startswith(prefix)]
 
-additional_commands = ['all-of-a-service']
+additional_commands = ['all-of-a-service', 'trace']
 
 plugin_patch = []
 for plugin in kubectl_default_commands + kubernetes_bin_files + krew_plugins + additional_commands:
@@ -127,6 +127,14 @@ func_body_replacements.append(
     '           __kubectl_debug \'[.] Calling _all-of-a-service_completions\'' +
     '\n' +
     '           _all-of-a-service_completions' +
+    '\n' +
+    '          return' +
+    '\n' +
+    '    elif echo "$requestComp" | grep -qE -- \'trace\'; then' +
+    '\n' +
+    '           __kubectl_debug \'[.] Calling _trace_completions\'' +
+    '\n' +
+    '           _trace_completions' +
     '\n' +
     '          return' +
     '\n' +
