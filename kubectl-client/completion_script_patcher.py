@@ -68,8 +68,9 @@ kubernetes_bin_files = [bin_file.replace(prefix, '' ).replace('_', '-') \
 
 additional_commands = ['all-of-a-service', 'trace']
 
+deduplicated = list(set(kubectl_default_commands + kubernetes_bin_files + krew_plugins + additional_commands))
 plugin_patch = []
-for plugin in kubectl_default_commands + kubernetes_bin_files + krew_plugins + additional_commands:
+for plugin in deduplicated:
     plugin_patch.append(format(plugin, array_name='_all_commands'))
 
 # ensure root command completions and namespace completions will not be overriden
