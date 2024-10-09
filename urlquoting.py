@@ -17,7 +17,8 @@ op_name = os.path.basename(sys.argv[0])
 operations = {'urldecode': unquote, 'urlencode': quote}
 op = operations[op_name]
 
-if len(sys.argv) > 2 and sys.argv[1] == '--oauth2':
+arg_len = len(sys.argv)
+if arg_len > 2 and sys.argv[1] == '--oauth2':
     if op_name != 'urldecode':
         print('[!] unsupported for this operation', file=sys.stderr)
         exit(1)
@@ -26,8 +27,11 @@ if len(sys.argv) > 2 and sys.argv[1] == '--oauth2':
     url = unquote(url)
     url = url.split('&g0.tab=1')[0]
     url = re.sub('/oauth2/[^/]+/', '/', url)
-else:
+elif arg_len > 1:
     url = sys.argv[1]
+    url = op(url)
+else:
+    url = input()
     url = op(url)
 
 print(url, end='')
