@@ -27,7 +27,11 @@ def get_title_and_duration(part: str):
 
 # with open(_in) as f:
 #     content = f.read()
-content = sys.stdin.read()
+try:
+    content = sys.stdin.read()
+except:
+    input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='latin-1')
+    content = input_stream.read()
 
 titles = {}
 content_end = False
