@@ -60,7 +60,7 @@ def format(plugin, array_name):
 kubectl_default_commands = subprocess.check_output("kubectl __completeNoDesc '' 2>/dev/null", shell=True).decode('utf-8').splitlines()[:-1]
 krew_plugins = subprocess.check_output(['kubectl', 'krew', 'list']).decode('utf-8').splitlines()
 
-kubernetes_bin_dir = os.environ['HOME'] + '/Documents/scripts/kubernetes/bin'
+kubernetes_bin_dir = os.environ['HOME'] + '/Repos/scripts/kubernetes/bin'
 prefix = 'kubectl-'
 kubernetes_bin_files = [bin_file.replace(prefix, '' ).replace('_', '-') \
         for bin_file in os.listdir(kubernetes_bin_dir) \
