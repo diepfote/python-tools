@@ -55,7 +55,10 @@ def debug(edited, original):
         f.write(edited)
 
 
-    command = ['git', '-c', 'color.status=always', 'diff', '--word-diff', '--no-index', orig, edit]
+    git_additional_args = ['--word-diff']
+    if os.environ.get('GIT_PAGER', '').startswith('delta'):
+        git_additional_args = []
+    command = ['git', '-c', 'color.status=always', 'diff', *git_additional_args, '--no-index', orig, edit]
     subprocess.run(command, stdout=sys.stdout, stderr=sys.stderr)
 
     os.remove(orig)
