@@ -11,14 +11,15 @@ else:
     person_to_filter_for = None
 # breakpoint()
 
-less_data = df.loc[:, ['Bereitschaft', 'Column1', 'Column12']]
+less_data = df.loc[:, ['On-Call Duty', 'From-Date', 'To-Date']]
 
 calendar = Calendar()
 
 for _, row in less_data.iterrows():
-    name = row[0]
-    start = row[1]
-    end = row[2]
+    name, start, end = row.to_list()
+    start = str(start)
+    end = str(end)
+
 
     event = Event()
 
@@ -39,6 +40,6 @@ for _, row in less_data.iterrows():
 
 ics_name = '/tmp/bereitschaft.ics'
 with open(ics_name, 'w') as f:
-    f.write(str(calendar))
+    f.write(calendar.serialize())
     print(f'Wrote file to `{ics_name}`.', file=sys.stderr)
 
