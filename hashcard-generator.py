@@ -34,6 +34,8 @@ with open(sys.argv[1]) as f:
             continue
         try:
             q, a = line.split('...', 1)
+            if a.isspace():
+                raise Exception()
             print(f'Q: {q.strip()}\nA: {a.strip()}\n\n---\n')
         except:
             print(f'[.] no card for {line[:10].strip()}', file=sys.stderr)
