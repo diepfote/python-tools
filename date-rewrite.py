@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 
+from sys import argv
 from datetime import datetime
+
+
+# valid input for exiftool
+date_format = '%Y:%m:%d %H:%M:%S'  # '2023:12:20 00:02:07'
+if len(argv) > 1:
+    # alternate input date formats
+    date_format=argv[1]
 
 _in = input().strip()
 
@@ -25,6 +33,9 @@ formats_to_try = [
         # e.g. '2025-05-25T05:24:00+0000'
         '%Y-%m-%dT%H:%M:%S%z',
 
+        # e.g. 2026:01:15 03:00:00
+        '%Y:%m:%d %H:%M:%S',
+
         # e.g. 'October 31, 2025 at 2:00 PM UTC'
         '%B %d, %Y at %H:%M %p %Z'
         ]
@@ -38,6 +49,5 @@ for f in formats_to_try:
         pass
 
 
-# e.g. '2023:12:20 00:02:07'
-print(out.strftime("%Y:%m:%d %H:%M:%S"))
+print(out.strftime(date_format))
 
