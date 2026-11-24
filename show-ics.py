@@ -1,27 +1,29 @@
 #!/usr/bin/env python3
 
 # snatched from https://stackoverflow.com/a/6470135
+# and kudos to a LLM
 #
 # I use this to view ics files in neomutt
 
 import sys
 import vobject
 
+with open(sys.argv[1], encoding='utf-8') as f:
+    data = f.read()
 
-data = open(sys.argv[1]).read()
+for cal in vobject.readComponents(data):
+    for ev in getattr(cal, 'vevent_list', []):
+        print('Summary: ', ev.summary.value if hasattr(ev, 'summary') else '')
+        print('Start:   ', ev.dtstart.value)
 
-# parse the top-level event with vobject
-cal = vobject.readOne(data)
+        if hasattr(ev, 'dtend'):
+            print('End:     ', ev.dtend.value)
+        elif hasattr(ev, 'duration'):
+            print('Duration:', ev.duration.value)
 
-print('Summary: ', cal.vevent.summary.valueRepr())
-print('')
+        if hasattr(ev, 'rrule'):
+            print('Repeats: ', ev.rrule.value)
 
-print('Start:   ', cal.vevent.dtstart.value)
-print('End:     ', cal.vevent.dtend.value)
-try:
-    print('Repeats: ', cal.vevent.rrule)
-except:
-    pass
-print('')
-print('Description: ', cal.vevent.description.valueRepr())
-
+        if hasattr(ev, 'description'):
+            print('Description:', ev.description.value)
+        print()
